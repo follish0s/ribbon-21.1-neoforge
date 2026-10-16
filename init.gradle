@@ -1,0 +1,17 @@
+gradle.beforeProject { project ->
+    project.repositories.all { repo ->
+        try {
+            def urlVal = null
+            try { urlVal = repo.url } catch (Throwable t) {}
+            if (urlVal != null) {
+                def oldUrl = urlVal.toString()
+                if (oldUrl.startsWith("https://maven.neoforged.net")) {
+                    def suffix = oldUrl.substring("https://maven.neoforged.net".length())
+                    suffix = suffix.replaceFirst("^/releases", "")
+                    def newUrl = "https://neoforged.forgecdn.net/releases" + suffix
+                    repo.setUrl(newUrl)
+                }
+            }
+        } catch (Throwable t) {}
+    }
+}

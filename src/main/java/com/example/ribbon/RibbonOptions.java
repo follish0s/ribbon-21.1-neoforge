@@ -1,0 +1,683 @@
+package com.example.ribbon;
+
+import com.google.common.collect.ImmutableList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import org.embeddedt.embeddium.api.OptionGUIConstructionEvent;
+import org.embeddedt.embeddium.api.options.OptionIdentifier;
+import org.embeddedt.embeddium.api.options.control.CyclingControl;
+import org.embeddedt.embeddium.api.options.control.SliderControl;
+import org.embeddedt.embeddium.api.options.control.TickBoxControl;
+import org.embeddedt.embeddium.api.options.structure.OptionGroup;
+import org.embeddedt.embeddium.api.options.structure.OptionImpact;
+import org.embeddedt.embeddium.api.options.structure.OptionImpl;
+import org.embeddedt.embeddium.api.options.structure.OptionPage;
+import org.embeddedt.embeddium.api.options.structure.OptionStorage;
+
+public class RibbonOptions {
+
+    private static final OptionStorage<Object> STORAGE = new OptionStorage<Object>() {
+        private final Object data = new Object();
+        @Override public Object getData() { return data; }
+        @Override public void save() { Config.SPEC.save(); }
+    };
+
+    private static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath("ribbon", path);
+    }
+
+    public static void init() {
+        OptionGUIConstructionEvent.BUS.addListener(event -> {
+            event.addPage(buildHudPage());
+            event.addPage(buildVisualsPage());
+            event.addPage(buildEffectsPage());
+            event.addPage(buildGameplayPage());
+            event.addPage(buildPerformancePage());
+            event.addPage(buildLunarPage());
+            event.addPage(buildDynamicLightPage());
+            event.addPage(buildMusicPage());
+            event.addPage(buildMiscPage());
+        });
+    }
+
+    // ============ 页面 1：HUD ============
+    private static OptionPage buildHudPage() {
+        OptionGroup.Builder group = OptionGroup.createBuilder().setId(id("hud_group"));
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("show_overlay"))
+                .setName(Component.literal(LangUtil.tr("option.show_overlay")))
+                .setTooltip(Component.literal(LangUtil.tr("option.show_overlay.tooltip")))
+                .setBinding((d, v) -> Config.SHOW_OVERLAY.set(v), d -> Config.SHOW_OVERLAY.get())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Config.OverlayCorner.class, STORAGE)
+                .setId(id("overlay_corner"))
+                .setName(Component.literal(LangUtil.tr("option.overlay_corner")))
+                .setTooltip(Component.literal(LangUtil.tr("option.overlay_corner.tooltip")))
+                .setBinding((d, v) -> Config.OVERLAY_CORNER.set(v), d -> Config.OVERLAY_CORNER.get())
+                .setControl(o -> new CyclingControl<>(o, Config.OverlayCorner.class))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("overlay_scale"))
+                .setName(Component.literal(LangUtil.tr("option.overlay_scale")))
+                .setTooltip(Component.literal(LangUtil.tr("option.overlay_scale.tooltip")))
+                .setBinding((d, v) -> Config.OVERLAY_SCALE.set(v / 10.0),
+                        d -> (int) Math.round(Config.OVERLAY_SCALE.get() * 10.0))
+                .setControl(o -> new SliderControl(o, 5, 30, 1,
+                        v -> Component.literal(String.format("%.1fx", v / 10.0))))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("rainbow_crosshair"))
+                .setName(Component.literal(LangUtil.tr("option.rainbow_crosshair")))
+                .setTooltip(Component.literal(LangUtil.tr("option.rainbow_crosshair.tooltip")))
+                .setBinding((d, v) -> Config.RAINBOW_CROSSHAIR.set(v), d -> Config.RAINBOW_CROSSHAIR.get())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("hotbar_highlight"))
+                .setName(Component.literal(LangUtil.tr("option.hotbar_highlight")))
+                .setTooltip(Component.literal(LangUtil.tr("option.hotbar_highlight.tooltip")))
+                .setBinding((d, v) -> Config.HOTBAR_HIGHLIGHT.set(v), d -> Config.HOTBAR_HIGHLIGHT.get())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("damage_numbers"))
+                .setName(Component.literal(LangUtil.tr("option.damage_numbers")))
+                .setTooltip(Component.literal(LangUtil.tr("option.damage_numbers.tooltip")))
+                .setBinding((d, v) -> Config.DAMAGE_NUMBERS.set(v), d -> Config.DAMAGE_NUMBERS.get())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("damage_number_scale"))
+                .setName(Component.literal(LangUtil.tr("option.damage_number_scale")))
+                .setTooltip(Component.literal(LangUtil.tr("option.damage_number_scale.tooltip")))
+                .setBinding((d, v) -> Config.DAMAGE_NUMBER_SCALE.set(v / 10.0),
+                        d -> (int) Math.round(Config.DAMAGE_NUMBER_SCALE.get() * 10.0))
+                .setControl(o -> new SliderControl(o, 5, 50, 1,
+                        v -> Component.literal(String.format("%.1fx", v / 10.0))))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("biome_title"))
+                .setName(Component.literal(LangUtil.tr("option.biome_title")))
+                .setTooltip(Component.literal(LangUtil.tr("option.biome_title.tooltip")))
+                .setBinding((d, v) -> Config.BIOME_TITLE.set(v), d -> Config.BIOME_TITLE.get())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("biome_title_duration"))
+                .setName(Component.literal(LangUtil.tr("option.biome_title_duration")))
+                .setTooltip(Component.literal(LangUtil.tr("option.biome_title_duration.tooltip")))
+                .setBinding((d, v) -> Config.BIOME_TITLE_DURATION.set(v), d -> Config.BIOME_TITLE_DURATION.get())
+                .setControl(o -> new SliderControl(o, 1000, 10000, 500,
+                        v -> Component.literal(String.format("%.1fs", v / 1000.0))))
+                .setImpact(OptionImpact.LOW).build());
+
+        return new OptionPage(
+                OptionIdentifier.create(id("page_hud")),
+                Component.literal(LangUtil.tr("ribbon.page.hud")),
+                ImmutableList.of(group.build()));
+    }
+
+    // ============ 页面 2：视觉 ============
+    private static OptionPage buildVisualsPage() {
+        OptionGroup.Builder group = OptionGroup.createBuilder().setId(id("visuals_group"));
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("rainbow_block_outline"))
+                .setName(Component.literal(LangUtil.tr("option.rainbow_block_outline")))
+                .setTooltip(Component.literal(LangUtil.tr("option.rainbow_block_outline.tooltip")))
+                .setBinding((d, v) -> Config.RAINBOW_BLOCK_OUTLINE.set(v), d -> Config.RAINBOW_BLOCK_OUTLINE.get())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Config.OutlineColorMode.class, STORAGE)
+                .setId(id("outline_color_mode"))
+                .setName(Component.literal(LangUtil.tr("option.outline_color_mode")))
+                .setTooltip(Component.literal(LangUtil.tr("option.outline_color_mode.tooltip")))
+                .setBinding((d, v) -> Config.OUTLINE_COLOR_MODE.set(v), d -> Config.OUTLINE_COLOR_MODE.get())
+                .setControl(o -> new CyclingControl<>(o, Config.OutlineColorMode.class))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("rainbow_health"))
+                .setName(Component.literal(LangUtil.tr("option.rainbow_health")))
+                .setTooltip(Component.literal(LangUtil.tr("option.rainbow_health.tooltip")))
+                .setBinding((d, v) -> Config.RAINBOW_HEALTH.set(v), d -> Config.RAINBOW_HEALTH.get())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Config.HealthColorMode.class, STORAGE)
+                .setId(id("health_color_mode"))
+                .setName(Component.literal(LangUtil.tr("option.health_color_mode")))
+                .setTooltip(Component.literal(LangUtil.tr("option.health_color_mode.tooltip")))
+                .setBinding((d, v) -> Config.HEALTH_COLOR_MODE.set(v), d -> Config.HEALTH_COLOR_MODE.get())
+                .setControl(o -> new CyclingControl<>(o, Config.HealthColorMode.class))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("health_rainbow_speed"))
+                .setName(Component.literal(LangUtil.tr("option.health_rainbow_speed")))
+                .setTooltip(Component.literal(LangUtil.tr("option.health_rainbow_speed.tooltip")))
+                .setBinding((d, v) -> Config.HEALTH_RAINBOW_SPEED.set(v / 10.0),
+                        d -> (int) Math.round(Config.HEALTH_RAINBOW_SPEED.get() * 10.0))
+                .setControl(o -> new SliderControl(o, 1, 50, 1,
+                        v -> Component.literal(String.format("%.1fx", v / 10.0))))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("health_low_shake"))
+                .setName(Component.literal(LangUtil.tr("option.health_low_shake")))
+                .setTooltip(Component.literal(LangUtil.tr("option.health_low_shake.tooltip")))
+                .setBinding((d, v) -> Config.HEALTH_LOW_SHAKE.set(v), d -> Config.HEALTH_LOW_SHAKE.get())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("health_low_shake_threshold"))
+                .setName(Component.literal(LangUtil.tr("option.health_low_shake_threshold")))
+                .setTooltip(Component.literal(LangUtil.tr("option.health_low_shake_threshold.tooltip")))
+                .setBinding((d, v) -> Config.HEALTH_LOW_SHAKE_THRESHOLD.set(v),
+                        d -> Config.HEALTH_LOW_SHAKE_THRESHOLD.get())
+                .setControl(o -> new SliderControl(o, 5, 90, 5, v -> Component.literal(v + "%")))
+                .setImpact(OptionImpact.LOW).build());
+
+        return new OptionPage(
+                OptionIdentifier.create(id("page_visuals")),
+                Component.literal(LangUtil.tr("ribbon.page.visuals")),
+                ImmutableList.of(group.build()));
+    }
+
+    // ============ 页面 3：特效 ============
+    private static OptionPage buildEffectsPage() {
+        OptionGroup.Builder group = OptionGroup.createBuilder().setId(id("effects_group"));
+
+        group.add(OptionImpl.createBuilder(Config.ClickEffectType.class, STORAGE)
+                .setId(id("click_effect_type"))
+                .setName(Component.literal(LangUtil.tr("option.click_effect_type")))
+                .setTooltip(Component.literal(LangUtil.tr("option.click_effect_type.tooltip")))
+                .setBinding((d, v) -> Config.CLICK_EFFECT_TYPE.set(v), d -> Config.CLICK_EFFECT_TYPE.get())
+                .setControl(o -> new CyclingControl<>(o, Config.ClickEffectType.class))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("click_effect_cover_ui"))
+                .setName(Component.literal(LangUtil.tr("option.click_effect_cover_ui")))
+                .setTooltip(Component.literal(LangUtil.tr("option.click_effect_cover_ui.tooltip")))
+                .setBinding((d, v) -> Config.CLICK_EFFECT_COVER_UI.set(v),
+                        d -> Config.isClickEffectCoverUi())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("click_effect_ui_widgets_only"))
+                .setName(Component.literal(LangUtil.tr("option.click_effect_ui_widgets_only")))
+                .setTooltip(Component.literal(LangUtil.tr("option.click_effect_ui_widgets_only.tooltip")))
+                .setBinding((d, v) -> Config.CLICK_EFFECT_UI_ONLY_ON_WIDGETS.set(v),
+                        d -> Config.isClickEffectUiOnlyOnWidgets())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("click_effect_mute_vanilla"))
+                .setName(Component.literal(LangUtil.tr("option.click_effect_mute_vanilla")))
+                .setTooltip(Component.literal(LangUtil.tr("option.click_effect_mute_vanilla.tooltip")))
+                .setBinding((d, v) -> Config.CLICK_EFFECT_MUTE_VANILLA.set(v),
+                        d -> Config.isClickEffectMuteVanilla())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("hit_particles"))
+                .setName(Component.literal(LangUtil.tr("option.hit_particles")))
+                .setTooltip(Component.literal(LangUtil.tr("option.hit_particles.tooltip")))
+                .setBinding((d, v) -> Config.HIT_PARTICLES.set(v), d -> Config.HIT_PARTICLES.get())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("hit_particle_intensity"))
+                .setName(Component.literal(LangUtil.tr("option.hit_particle_intensity")))
+                .setTooltip(Component.literal(LangUtil.tr("option.hit_particle_intensity.tooltip")))
+                .setBinding((d, v) -> Config.HIT_PARTICLE_INTENSITY.set(v),
+                        d -> Config.HIT_PARTICLE_INTENSITY.get())
+                .setControl(o -> new SliderControl(o, 1, 10, 1, v -> Component.literal(v + "x")))
+                .setImpact(OptionImpact.LOW).build());
+
+        return new OptionPage(
+                OptionIdentifier.create(id("page_effects")),
+                Component.literal(LangUtil.tr("ribbon.page.effects")),
+                ImmutableList.of(group.build()));
+    }
+
+    // ============ 页面 4：游戏体验 ============
+    private static OptionPage buildGameplayPage() {
+        OptionGroup.Builder group = OptionGroup.createBuilder().setId(id("gameplay_group"));
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("zoom_enabled"))
+                .setName(Component.literal(LangUtil.tr("option.zoom_enabled")))
+                .setTooltip(Component.literal(LangUtil.tr("option.zoom_enabled.tooltip")))
+                .setBinding((d, v) -> Config.ZOOM_ENABLED.set(v), d -> Config.ZOOM_ENABLED.get())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("zoom_fov_multiplier"))
+                .setName(Component.literal(LangUtil.tr("option.zoom_fov_multiplier")))
+                .setTooltip(Component.literal(LangUtil.tr("option.zoom_fov_multiplier.tooltip")))
+                .setBinding((d, v) -> Config.ZOOM_FOV_MULTIPLIER.set(v / 100.0),
+                        d -> (int) Math.round(Config.ZOOM_FOV_MULTIPLIER.get() * 100.0))
+                .setControl(o -> new SliderControl(o, 10, 90, 5,
+                        v -> Component.literal(String.format("%.2fx", v / 100.0))))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("zoom_smooth"))
+                .setName(Component.literal(LangUtil.tr("option.zoom_smooth")))
+                .setTooltip(Component.literal(LangUtil.tr("option.zoom_smooth.tooltip")))
+                .setBinding((d, v) -> Config.ZOOM_SMOOTH.set(v), d -> Config.ZOOM_SMOOTH.get())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        return new OptionPage(
+                OptionIdentifier.create(id("page_gameplay")),
+                Component.literal(LangUtil.tr("ribbon.page.gameplay")),
+                ImmutableList.of(group.build()));
+    }
+
+    // ============ 页面 5：性能 ============
+    private static OptionPage buildPerformancePage() {
+        OptionGroup.Builder group = OptionGroup.createBuilder().setId(id("performance_group"));
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("fast_map"))
+                .setName(Component.literal(LangUtil.tr("option.fast_map")))
+                .setTooltip(Component.literal(LangUtil.tr("option.fast_map.tooltip")))
+                .setBinding((d, v) -> Config.FAST_MAP_ENABLED.set(v),
+                        d -> Config.isFastMapEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("entity_culling"))
+                .setName(Component.literal(LangUtil.tr("option.entity_culling")))
+                .setTooltip(Component.literal(LangUtil.tr("option.entity_culling.tooltip")))
+                .setBinding((d, v) -> Config.ENTITY_CULLING_ENABLED.set(v),
+                        d -> Config.isEntityCullingEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("entity_culling_range"))
+                .setName(Component.literal(LangUtil.tr("option.entity_culling_range")))
+                .setTooltip(Component.literal(LangUtil.tr("option.entity_culling_range.tooltip")))
+                .setBinding((d, v) -> Config.ENTITY_CULLING_RANGE.set(v),
+                        d -> Config.getEntityCullingRange())
+                .setControl(o -> new SliderControl(o, 16, 128, 8, v -> Component.literal(v + "m")))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("block_entity_culling"))
+                .setName(Component.literal(LangUtil.tr("option.block_entity_culling")))
+                .setTooltip(Component.literal(LangUtil.tr("option.block_entity_culling.tooltip")))
+                .setBinding((d, v) -> Config.BLOCK_ENTITY_CULLING_ENABLED.set(v),
+                        d -> Config.isBlockEntityCullingEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("block_entity_culling_range"))
+                .setName(Component.literal(LangUtil.tr("option.block_entity_culling_range")))
+                .setTooltip(Component.literal(LangUtil.tr("option.block_entity_culling_range.tooltip")))
+                .setBinding((d, v) -> Config.BLOCK_ENTITY_CULLING_RANGE.set(v),
+                        d -> Config.getBlockEntityCullingRange())
+                .setControl(o -> new SliderControl(o, 16, 128, 8, v -> Component.literal(v + "m")))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("item_entity_culling"))
+                .setName(Component.literal(LangUtil.tr("option.item_entity_culling")))
+                .setTooltip(Component.literal(LangUtil.tr("option.item_entity_culling.tooltip")))
+                .setBinding((d, v) -> Config.ITEM_ENTITY_CULLING_ENABLED.set(v),
+                        d -> Config.isItemEntityCullingEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("item_entity_max_distance"))
+                .setName(Component.literal(LangUtil.tr("option.item_entity_max_distance")))
+                .setTooltip(Component.literal(LangUtil.tr("option.item_entity_max_distance.tooltip")))
+                .setBinding((d, v) -> Config.ITEM_ENTITY_MAX_DISTANCE.set(v),
+                        d -> Config.getItemEntityMaxDistance())
+                .setControl(o -> new SliderControl(o, 16, 128, 8, v -> Component.literal(v + "m")))
+                .setImpact(OptionImpact.LOW).build());
+
+        return new OptionPage(
+                OptionIdentifier.create(id("page_performance")),
+                Component.literal(LangUtil.tr("ribbon.page.performance")),
+                ImmutableList.of(group.build()));
+    }
+
+    // ============ 页面 6：农历 ============
+    private static OptionPage buildLunarPage() {
+        OptionGroup.Builder group = OptionGroup.createBuilder().setId(id("lunar_group"));
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("lunar_hud_enabled"))
+                .setName(Component.literal(LangUtil.tr("option.lunar_hud_enabled")))
+                .setTooltip(Component.literal(LangUtil.tr("option.lunar_hud_enabled.tooltip")))
+                .setBinding((d, v) -> Config.LUNAR_HUD_ENABLED.set(v),
+                        d -> Config.isLunarHudEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Config.OverlayCorner.class, STORAGE)
+                .setId(id("lunar_hud_corner"))
+                .setName(Component.literal(LangUtil.tr("option.lunar_hud_corner")))
+                .setTooltip(Component.literal(LangUtil.tr("option.lunar_hud_corner.tooltip")))
+                .setBinding((d, v) -> Config.LUNAR_HUD_CORNER.set(v),
+                        d -> Config.getLunarHudCorner())
+                .setControl(o -> new CyclingControl<>(o, Config.OverlayCorner.class))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("lunar_hud_scale"))
+                .setName(Component.literal(LangUtil.tr("option.lunar_hud_scale")))
+                .setTooltip(Component.literal(LangUtil.tr("option.lunar_hud_scale.tooltip")))
+                .setBinding((d, v) -> Config.LUNAR_HUD_SCALE.set(v / 10.0),
+                        d -> (int) Math.round(Config.getLunarHudScale() * 10.0))
+                .setControl(o -> new SliderControl(o, 5, 30, 1,
+                        v -> Component.literal(String.format("%.1fx", v / 10.0))))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("lunar_show_term"))
+                .setName(Component.literal(LangUtil.tr("option.lunar_show_term")))
+                .setTooltip(Component.literal(LangUtil.tr("option.lunar_show_term.tooltip")))
+                .setBinding((d, v) -> Config.LUNAR_SHOW_TERM.set(v),
+                        d -> Config.isShowSolarTerm())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("lunar_show_festival"))
+                .setName(Component.literal(LangUtil.tr("option.lunar_show_festival")))
+                .setTooltip(Component.literal(LangUtil.tr("option.lunar_show_festival.tooltip")))
+                .setBinding((d, v) -> Config.LUNAR_SHOW_FESTIVAL.set(v),
+                        d -> Config.isShowFestival())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("lunar_festival_title"))
+                .setName(Component.literal(LangUtil.tr("option.lunar_festival_title")))
+                .setTooltip(Component.literal(LangUtil.tr("option.lunar_festival_title.tooltip")))
+                .setBinding((d, v) -> Config.LUNAR_FESTIVAL_TITLE.set(v),
+                        d -> Config.isFestivalTitleEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("lunar_festival_effect"))
+                .setName(Component.literal(LangUtil.tr("option.lunar_festival_effect")))
+                .setTooltip(Component.literal(LangUtil.tr("option.lunar_festival_effect.tooltip")))
+                .setBinding((d, v) -> Config.LUNAR_FESTIVAL_EFFECT.set(v),
+                        d -> Config.isFestivalEffectEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Config.HolidayScope.class, STORAGE)
+                .setId(id("lunar_holiday_scope"))
+                .setName(Component.literal(LangUtil.tr("option.lunar_holiday_scope")))
+                .setTooltip(Component.literal(LangUtil.tr("option.lunar_holiday_scope.tooltip")))
+                .setBinding((d, v) -> Config.LUNAR_HOLIDAY_SCOPE.set(v),
+                        d -> Config.getHolidayScope())
+                .setControl(o -> new CyclingControl<>(o, Config.HolidayScope.class))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("lunar_festival_badge"))
+                .setName(Component.literal(LangUtil.tr("option.lunar_festival_badge")))
+                .setTooltip(Component.literal(LangUtil.tr("option.lunar_festival_badge.tooltip")))
+                .setBinding((d, v) -> Config.LUNAR_FESTIVAL_BADGE.set(v),
+                        d -> Config.isFestivalBadgeEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Config.OverlayCorner.class, STORAGE)
+                .setId(id("lunar_festival_badge_corner"))
+                .setName(Component.literal(LangUtil.tr("option.lunar_festival_badge_corner")))
+                .setTooltip(Component.literal(LangUtil.tr("option.lunar_festival_badge_corner.tooltip")))
+                .setBinding((d, v) -> Config.LUNAR_FESTIVAL_BADGE_CORNER.set(v),
+                        d -> Config.getFestivalBadgeCorner())
+                .setControl(o -> new CyclingControl<>(o, Config.OverlayCorner.class))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("lunar_festival_countdown"))
+                .setName(Component.literal(LangUtil.tr("option.lunar_festival_countdown")))
+                .setTooltip(Component.literal(LangUtil.tr("option.lunar_festival_countdown.tooltip")))
+                .setBinding((d, v) -> Config.LUNAR_FESTIVAL_COUNTDOWN.set(v),
+                        d -> Config.isFestivalCountdownEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("lunar_upcoming_preview"))
+                .setName(Component.literal(LangUtil.tr("option.lunar_upcoming_preview")))
+                .setTooltip(Component.literal(LangUtil.tr("option.lunar_upcoming_preview.tooltip")))
+                .setBinding((d, v) -> {}, d -> 0)
+                .setControl(o -> new SliderControl(o, 0, 4, 1, v -> {
+                    var list = com.example.ribbon.lunar.FestivalPreview.getUpcoming(5);
+                    if (v >= list.size()) return Component.literal("-");
+                    return Component.literal(list.get(v).format());
+                }))
+                .setImpact(OptionImpact.LOW).build());
+
+        return new OptionPage(
+                OptionIdentifier.create(id("page_lunar")),
+                Component.literal(LangUtil.tr("ribbon.page.lunar")),
+                ImmutableList.of(group.build()));
+    }
+
+    // ============ 页面 7：动态光源（含光照等级 HUD） ============
+    private static OptionPage buildDynamicLightPage() {
+        OptionGroup.Builder group = OptionGroup.createBuilder().setId(id("dynamic_light_group"));
+
+        // ===== 光照等级 HUD（从 HUD 页面挪过来） =====
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("light_level_hud"))
+                .setName(Component.literal(LangUtil.tr("option.light_level_hud")))
+                .setTooltip(Component.literal(LangUtil.tr("option.light_level_hud.tooltip")))
+                .setBinding((d, v) -> Config.LIGHT_LEVEL_HUD_ENABLED.set(v),
+                        d -> Config.isLightLevelHudEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Config.OverlayCorner.class, STORAGE)
+                .setId(id("light_level_hud_corner"))
+                .setName(Component.literal(LangUtil.tr("option.light_level_hud_corner")))
+                .setTooltip(Component.literal(LangUtil.tr("option.light_level_hud_corner.tooltip")))
+                .setBinding((d, v) -> Config.LIGHT_LEVEL_HUD_CORNER.set(v),
+                        d -> Config.getLightLevelHudCorner())
+                .setControl(o -> new CyclingControl<>(o, Config.OverlayCorner.class))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("light_level_hud_scale"))
+                .setName(Component.literal(LangUtil.tr("option.light_level_hud_scale")))
+                .setTooltip(Component.literal(LangUtil.tr("option.light_level_hud_scale.tooltip")))
+                .setBinding((d, v) -> Config.LIGHT_LEVEL_HUD_SCALE.set(v / 10.0),
+                        d -> (int) Math.round(Config.getLightLevelHudScale() * 10.0))
+                .setControl(o -> new SliderControl(o, 5, 30, 1,
+                        v -> Component.literal(String.format("%.1fx", v / 10.0))))
+                .setImpact(OptionImpact.LOW).build());
+
+        // ===== 动态光源 =====
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("dynamic_light_enabled"))
+                .setName(Component.literal(LangUtil.tr("option.dynamic_light_enabled")))
+                .setTooltip(Component.literal(LangUtil.tr("option.dynamic_light_enabled.tooltip")))
+                .setBinding((d, v) -> Config.DYNAMIC_LIGHT_ENABLED.set(v),
+                        d -> Config.isDynamicLightEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.MEDIUM).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("dynamic_light_auto_disable"))
+                .setName(Component.literal(LangUtil.tr("option.dynamic_light_auto_disable")))
+                .setTooltip(Component.literal(LangUtil.tr("option.dynamic_light_auto_disable.tooltip")))
+                .setBinding((d, v) -> Config.DYNAMIC_LIGHT_AUTO_DISABLE_WITH_SHADERS.set(v),
+                        d -> Config.isDynamicLightAutoDisableWithShaders())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("dynamic_light_radius"))
+                .setName(Component.literal(LangUtil.tr("option.dynamic_light_radius")))
+                .setTooltip(Component.literal(LangUtil.tr("option.dynamic_light_radius.tooltip")))
+                .setBinding((d, v) -> Config.DYNAMIC_LIGHT_RADIUS.set(v),
+                        d -> Config.getDynamicLightRadius())
+                .setControl(o -> new SliderControl(o, 4, 24, 1, v -> Component.literal(v + "m")))
+                .setImpact(OptionImpact.MEDIUM).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("dynamic_light_intensity"))
+                .setName(Component.literal(LangUtil.tr("option.dynamic_light_intensity")))
+                .setTooltip(Component.literal(LangUtil.tr("option.dynamic_light_intensity.tooltip")))
+                .setBinding((d, v) -> Config.DYNAMIC_LIGHT_INTENSITY.set(v),
+                        d -> Config.getDynamicLightIntensity())
+                .setControl(o -> new SliderControl(o, 1, 15, 1, v -> Component.literal(String.valueOf(v))))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("dynamic_light_offset_x"))
+                .setName(Component.literal(LangUtil.tr("option.dynamic_light_offset_x")))
+                .setTooltip(Component.literal(LangUtil.tr("option.dynamic_light_offset_x.tooltip")))
+                .setBinding((d, v) -> Config.DYNAMIC_LIGHT_OFFSET_X.set(v / 10.0),
+                        d -> (int) Math.round(Config.getDynamicLightOffsetX() * 10.0))
+                .setControl(o -> new SliderControl(o, -40, 40, 1,
+                        v -> Component.literal(String.format("%.1f", v / 10.0))))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("dynamic_light_offset_y"))
+                .setName(Component.literal(LangUtil.tr("option.dynamic_light_offset_y")))
+                .setTooltip(Component.literal(LangUtil.tr("option.dynamic_light_offset_y.tooltip")))
+                .setBinding((d, v) -> Config.DYNAMIC_LIGHT_OFFSET_Y.set(v / 10.0),
+                        d -> (int) Math.round(Config.getDynamicLightOffsetY() * 10.0))
+                .setControl(o -> new SliderControl(o, -40, 40, 1,
+                        v -> Component.literal(String.format("%.1f", v / 10.0))))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("dynamic_light_offset_z"))
+                .setName(Component.literal(LangUtil.tr("option.dynamic_light_offset_z")))
+                .setTooltip(Component.literal(LangUtil.tr("option.dynamic_light_offset_z.tooltip")))
+                .setBinding((d, v) -> Config.DYNAMIC_LIGHT_OFFSET_Z.set(v / 10.0),
+                        d -> (int) Math.round(Config.getDynamicLightOffsetZ() * 10.0))
+                .setControl(o -> new SliderControl(o, -40, 40, 1,
+                        v -> Component.literal(String.format("%.1f", v / 10.0))))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("dynamic_light_update_interval"))
+                .setName(Component.literal(LangUtil.tr("option.dynamic_light_update_interval")))
+                .setTooltip(Component.literal(LangUtil.tr("option.dynamic_light_update_interval.tooltip")))
+                .setBinding((d, v) -> Config.DYNAMIC_LIGHT_UPDATE_INTERVAL.set(v),
+                        d -> Config.getDynamicLightUpdateInterval())
+                .setControl(o -> new SliderControl(o, 1, 20, 1,
+                        v -> Component.literal(v + " ticks")))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("dynamic_light_smooth"))
+                .setName(Component.literal(LangUtil.tr("option.dynamic_light_smooth")))
+                .setTooltip(Component.literal(LangUtil.tr("option.dynamic_light_smooth.tooltip")))
+                .setBinding((d, v) -> Config.DYNAMIC_LIGHT_SMOOTH_FADE.set(v),
+                        d -> Config.isDynamicLightSmoothFade())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("dynamic_light_smooth_speed"))
+                .setName(Component.literal(LangUtil.tr("option.dynamic_light_smooth_speed")))
+                .setTooltip(Component.literal(LangUtil.tr("option.dynamic_light_smooth_speed.tooltip")))
+                .setBinding((d, v) -> Config.DYNAMIC_LIGHT_SMOOTH_SPEED.set(v / 100.0),
+                        d -> (int) Math.round(Config.getDynamicLightSmoothSpeed() * 100.0))
+                .setControl(o -> new SliderControl(o, 5, 100, 5,
+                        v -> Component.literal(String.format("%.2f", v / 100.0))))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("dynamic_light_player_light"))
+                .setName(Component.literal(LangUtil.tr("option.dynamic_light_player_light")))
+                .setTooltip(Component.literal(LangUtil.tr("option.dynamic_light_player_light.tooltip")))
+                .setBinding((d, v) -> Config.DYNAMIC_LIGHT_PLAYER_LIGHT.set(v),
+                        d -> Config.isDynamicLightPlayerLight())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("dynamic_light_item_light"))
+                .setName(Component.literal(LangUtil.tr("option.dynamic_light_item_light")))
+                .setTooltip(Component.literal(LangUtil.tr("option.dynamic_light_item_light.tooltip")))
+                .setBinding((d, v) -> Config.DYNAMIC_LIGHT_ITEM_LIGHT.set(v),
+                        d -> Config.isDynamicLightItemLight())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("dynamic_light_item_min"))
+                .setName(Component.literal(LangUtil.tr("option.dynamic_light_item_min")))
+                .setTooltip(Component.literal(LangUtil.tr("option.dynamic_light_item_min.tooltip")))
+                .setBinding((d, v) -> Config.DYNAMIC_LIGHT_ITEM_MIN_LIGHT.set(v),
+                        d -> Config.getDynamicLightItemMinLight())
+                .setControl(o -> new SliderControl(o, 1, 15, 1, v -> Component.literal(String.valueOf(v))))
+                .setImpact(OptionImpact.LOW).build());
+
+        return new OptionPage(
+                OptionIdentifier.create(id("page_dynamic_light")),
+                Component.literal(LangUtil.tr("ribbon.page.dynamic_light")),
+                ImmutableList.of(group.build()));
+    }
+
+    // ============ 页面 8：音乐播放器 ============
+    private static OptionPage buildMusicPage() {
+        OptionGroup.Builder group = OptionGroup.createBuilder().setId(id("music_group"));
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("music_player_enabled"))
+                .setName(Component.literal(LangUtil.tr("option.music_player_enabled")))
+                .setTooltip(Component.literal(LangUtil.tr("option.music_player_enabled.tooltip")))
+                .setBinding((d, v) -> Config.MUSIC_PLAYER_ENABLED.set(v),
+                        d -> Config.isMusicPlayerEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("music_hud_enabled"))
+                .setName(Component.literal(LangUtil.tr("option.music_hud_enabled")))
+                .setTooltip(Component.literal(LangUtil.tr("option.music_hud_enabled.tooltip")))
+                .setBinding((d, v) -> Config.MUSIC_HUD_ENABLED.set(v),
+                        d -> Config.isMusicHudEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Config.OverlayCorner.class, STORAGE)
+                .setId(id("music_hud_corner"))
+                .setName(Component.literal(LangUtil.tr("option.music_hud_corner")))
+                .setTooltip(Component.literal(LangUtil.tr("option.music_hud_corner.tooltip")))
+                .setBinding((d, v) -> Config.MUSIC_HUD_CORNER.set(v),
+                        d -> Config.getMusicHudCorner())
+                .setControl(o -> new CyclingControl<>(o, Config.OverlayCorner.class))
+                .setImpact(OptionImpact.LOW).build());
+
+        return new OptionPage(
+                OptionIdentifier.create(id("page_music")),
+                Component.literal(LangUtil.tr("ribbon.page.music")),
+                ImmutableList.of(group.build()));
+    }
+
+    // ============ 页面 9：杂项 ============
+    private static OptionPage buildMiscPage() {
+        OptionGroup.Builder group = OptionGroup.createBuilder().setId(id("misc_group"));
+
+        group.add(OptionImpl.createBuilder(Config.Language.class, STORAGE)
+                .setId(id("language"))
+                .setName(Component.literal(LangUtil.tr("option.language")))
+                .setTooltip(Component.literal(LangUtil.tr("option.language.tooltip")))
+                .setBinding((d, v) -> Config.LANGUAGE.set(v), d -> Config.LANGUAGE.get())
+                .setControl(o -> new CyclingControl<>(o, Config.Language.class))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("shader_compatibility_warning"))
+                .setName(Component.literal(LangUtil.tr("option.shader_compatibility_warning")))
+                .setTooltip(Component.literal(LangUtil.tr("option.shader_compatibility_warning.tooltip")))
+                .setBinding((d, v) -> Config.SHADER_COMPATIBILITY_WARNING.set(v),
+                        d -> Config.isShaderCompatibilityWarningEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        return new OptionPage(
+                OptionIdentifier.create(id("page_misc")),
+                Component.literal(LangUtil.tr("ribbon.page.misc")),
+                ImmutableList.of(group.build()));
+    }
+}

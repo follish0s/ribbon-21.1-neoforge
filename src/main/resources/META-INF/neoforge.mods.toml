@@ -1,0 +1,55 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+license="LGPL-3.0-only"
+
+[[mixins]]
+config="embeddium.mixins.json"
+
+[[mixins]]
+config="ribbon.mixins.json"
+
+[[mods]]
+modId="embeddium"
+version="1.0.15"
+displayName="Ribbon (Embeddium fork)"
+logoFile="icon.png"
+description='''
+Embeddium fork bundled with Ribbon HUD enhancements.
+'''
+credits="embeddedt, NanoLive, CaffeineMC"
+authors="embeddedt"
+
+[[dependencies.embeddium]]
+modId = "neoforge"
+type = "required"
+mandatory = true
+versionRange = "[21.1.15,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[mods]]
+modId="ribbon"
+version="0.10.5"
+displayName="Ribbon"
+logoFile="icon.png"
+description='''
+Ribbon - HUD enhancement mod built on Embeddium.
+'''
+credits="follish0s"
+authors="follish0s"
+
+[[dependencies.ribbon]]
+modId = "neoforge"
+type = "required"
+mandatory = true
+versionRange = "[21.1.15,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.ribbon]]
+modId = "embeddium"
+type = "required"
+mandatory = true
+versionRange = "[1.0.0,)"
+ordering = "NONE"
+side = "CLIENT"
