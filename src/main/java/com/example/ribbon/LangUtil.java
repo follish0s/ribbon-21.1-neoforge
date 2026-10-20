@@ -26,9 +26,7 @@ public class LangUtil {
         EN.put("option.hotbar_highlight", "Hotbar highlight");
         EN.put("option.hotbar_highlight.tooltip", "Draw a rainbow border around the currently selected hotbar slot");
         EN.put("option.damage_numbers", "Damage numbers");
-        EN.put("option.damage_numbers.tooltip", "Show floating damage numbers when you hit an entity. "
-                + "Fire = red, Freeze = cyan, Lightning = yellow, Magic = purple, "
-                + "Special mods = rainbow, Normal = white.");
+        EN.put("option.damage_numbers.tooltip", "Show floating damage numbers when you hit an entity. Fire = red, Freeze = cyan, Lightning = yellow, Magic = purple, Special mods = rainbow, Normal = white.");
         EN.put("option.damage_number_scale", "Damage number scale");
         EN.put("option.damage_number_scale.tooltip", "Size multiplier for the damage numbers");
         EN.put("option.language", "Language");
@@ -71,10 +69,10 @@ public class LangUtil {
         EN.put("enum.CHINESE", "Chinese");
         EN.put("enum.BLUE_PURPLE", "Blue-purple");
         EN.put("enum.GREEN_PURPLE", "Green-purple");
-
         EN.put("option.shader_compatibility_warning", "Shader compatibility warning");
-        EN.put("option.shader_compatibility_warning.tooltip",
-                "Detect and block incompatible shaderpacks (Canvas, Vulkan) and show a notice");
+        EN.put("option.shader_compatibility_warning.tooltip", "Detect and block incompatible shaderpacks (Canvas, Vulkan) and show a notice");
+        EN.put("option.show_advanced_debug", "Advanced F3 Debug Info");
+        EN.put("option.show_advanced_debug.tooltip", "Show detailed CPU, Display and dependent mods in the F3 screen");
         EN.put("shader.warning.title", "Ribbon blocked an incompatible shaderpack");
         EN.put("shader.warning.format", "Format: %s | Shaders have been disabled");
         EN.put("shader.warning.hint", "You can disable this notice in Ribbon settings");
@@ -83,7 +81,6 @@ public class LangUtil {
         EN.put("shader.format.VULKAN", "Vulkan");
         EN.put("shader.format.UNKNOWN", "Unknown");
         EN.put("shader.format.VERSION_MISMATCH", "Version mismatch");
-
         EN.put("ribbon.page.hud", "Ribbon · HUD");
         EN.put("ribbon.page.visuals", "Ribbon · Visuals");
         EN.put("ribbon.page.effects", "Ribbon · Effects");
@@ -91,14 +88,10 @@ public class LangUtil {
         EN.put("ribbon.page.performance", "Ribbon · Performance");
         EN.put("ribbon.page.lunar", "Ribbon · Lunar");
         EN.put("ribbon.page.misc", "Ribbon · Misc");
-
         EN.put("option.hit_particles", "Hit particles");
         EN.put("option.hit_particles.tooltip", "Show extra particles when you hit an entity");
         EN.put("option.hit_particle_intensity", "Particle intensity");
         EN.put("option.hit_particle_intensity.tooltip", "Multiplier for the number of particles");
-
-        EN.put("option.fast_map", "Blockstate FastMap");
-        EN.put("option.fast_map.tooltip", "Replace blockstate neighbor tables with a shared cache (saves ~600MB RAM)");
         EN.put("option.entity_culling", "Entity culling");
         EN.put("option.entity_culling.tooltip", "Skip rendering entities occluded by blocks (only applies AFTER frustum culling)");
         EN.put("option.entity_culling_range", "Culling range");
@@ -115,7 +108,6 @@ public class LangUtil {
         EN.put("option.item_entity_culling.tooltip", "Skip rendering dropped items beyond the configured distance");
         EN.put("option.item_entity_max_distance", "Item max distance");
         EN.put("option.item_entity_max_distance.tooltip", "Maximum render distance for dropped items");
-
         EN.put("option.lunar_hud_enabled", "Lunar HUD");
         EN.put("option.lunar_hud_enabled.tooltip", "Show Chinese lunar date, solar terms and traditional festivals on the HUD");
         EN.put("option.lunar_hud_corner", "Lunar HUD position");
@@ -131,13 +123,10 @@ public class LangUtil {
         EN.put("option.lunar_festival_effect", "Festival particles");
         EN.put("option.lunar_festival_effect.tooltip", "Spawn festive particles around the player on major festival days");
         EN.put("option.lunar_holiday_scope", "Holiday scope");
-        EN.put("option.lunar_holiday_scope.tooltip",
-                "CHINA_ONLY = Chinese festivals only, INTERNATIONAL = + international, ALL = all countries");
+        EN.put("option.lunar_holiday_scope.tooltip", "CHINA_ONLY = Chinese festivals only, INTERNATIONAL = + international, ALL = all countries");
         EN.put("enum.CHINA_ONLY", "China only");
         EN.put("enum.INTERNATIONAL", "International");
         EN.put("enum.ALL", "All countries");
-
-        // ===== 节日翻译（英文） =====
         EN.put("ribbon.holiday.spring_festival", "Spring Festival");
         EN.put("ribbon.holiday.lantern_festival", "Lantern Festival");
         EN.put("ribbon.holiday.qingming", "Qingming Festival");
@@ -250,12 +239,9 @@ public class LangUtil {
         EN.put("option.click_effect_ui_widgets_only.tooltip", "Only trigger click effects when clicking a button or widget");
         EN.put("option.click_effect_mute_vanilla", "Mute vanilla click sound");
         EN.put("option.click_effect_mute_vanilla.tooltip", "Cancel the vanilla button click sound when triggered");
-
-        // ===== 音乐播放器（英文） =====
         EN.put("ribbon.page.music", "Ribbon · Music");
         EN.put("option.music_player_enabled", "Music player");
-        EN.put("option.music_player_enabled.tooltip",
-                "Enable the built-in MP3 player. Put .mp3 files in .minecraft/ribbon_music/");
+        EN.put("option.music_player_enabled.tooltip", "Enable the built-in MP3 player. Put .mp3 files in .minecraft/ribbon_music/");
         EN.put("option.music_hud_enabled", "Show music HUD");
         EN.put("option.music_hud_enabled.tooltip", "Show the currently playing track on screen");
         EN.put("option.music_hud_corner", "Music HUD position");
@@ -267,9 +253,14 @@ public class LangUtil {
         EN.put("music.track_count", "%d tracks loaded");
         EN.put("music.screen.title", "Music Player");
         EN.put("music.screen.hint", "Click a track to play  ·  K Pause  ·  . Next  ·  , Prev  ·  ESC Close");
+        EN.put("enum.BLUE_GREEN", "Blue-Green");
+        EN.put("enum.PURPLE_YELLOW", "Purple-Yellow");
+        EN.put("enum.PURPLE_GREEN_YELLOW", "Purple-Green-Yellow");
+        EN.put("damage.crit", "Crit!");
 
         // ===== 中文 =====
         ZH.put("ribbon.page", "Ribbon");
+        ZH.put("damage.crit", "暴击!");
         ZH.put("option.show_overlay", "显示 FPS/TPS 悬浮窗");
         ZH.put("option.show_overlay.tooltip", "在 HUD 上显示 FPS/TPS 文本");
         ZH.put("option.overlay_corner", "悬浮窗位置");
@@ -285,9 +276,7 @@ public class LangUtil {
         ZH.put("option.hotbar_highlight", "物品栏高亮");
         ZH.put("option.hotbar_highlight.tooltip", "在当前选中的物品栏槽位周围绘制彩虹边框");
         ZH.put("option.damage_numbers", "伤害数字");
-        ZH.put("option.damage_numbers.tooltip", "攻击实体时显示漂浮的伤害数字。"
-                + "火焰=红色，冰冻=青色，闪电=黄色，魔法=紫色，"
-                + "特殊模组=彩虹色，普通=白色。");
+        ZH.put("option.damage_numbers.tooltip", "攻击实体时显示漂浮的伤害数字。火焰=红色，冰冻=青色，闪电=黄色，魔法=紫色，特殊模组=彩虹色，普通=白色。");
         ZH.put("option.damage_number_scale", "伤害数字大小");
         ZH.put("option.damage_number_scale.tooltip", "伤害数字大小的倍数");
         ZH.put("option.language", "语言");
@@ -330,10 +319,10 @@ public class LangUtil {
         ZH.put("enum.CHINESE", "中文");
         ZH.put("enum.BLUE_PURPLE", "蓝紫");
         ZH.put("enum.GREEN_PURPLE", "绿紫");
-
         ZH.put("option.shader_compatibility_warning", "光影兼容性提示");
-        ZH.put("option.shader_compatibility_warning.tooltip",
-                "检测并拦截不兼容的光影包（Canvas、Vulkan），并显示提示");
+        ZH.put("option.shader_compatibility_warning.tooltip", "检测并拦截不兼容的光影包（Canvas、Vulkan），并显示提示");
+        ZH.put("option.show_advanced_debug", "高级 F3 调试信息");
+        ZH.put("option.show_advanced_debug.tooltip", "在 F3 界面中显示 CPU、显示器和依赖模组的详细信息");
         ZH.put("shader.warning.title", "Ribbon 已拦截当前不兼容着色器");
         ZH.put("shader.warning.format", "格式：%s | 已禁用光影");
         ZH.put("shader.warning.hint", "可前往 Ribbon 设置内关闭此提示");
@@ -342,7 +331,6 @@ public class LangUtil {
         ZH.put("shader.format.VULKAN", "Vulkan");
         ZH.put("shader.format.UNKNOWN", "未知");
         ZH.put("shader.format.VERSION_MISMATCH", "版本不匹配");
-
         ZH.put("ribbon.page.hud", "Ribbon · HUD");
         ZH.put("ribbon.page.visuals", "Ribbon · 视觉");
         ZH.put("ribbon.page.effects", "Ribbon · 特效");
@@ -350,14 +338,10 @@ public class LangUtil {
         ZH.put("ribbon.page.performance", "Ribbon · 性能");
         ZH.put("ribbon.page.lunar", "Ribbon · 农历");
         ZH.put("ribbon.page.misc", "Ribbon · 杂项");
-
         ZH.put("option.hit_particles", "命中粒子");
         ZH.put("option.hit_particles.tooltip", "攻击实体时显示额外粒子效果");
         ZH.put("option.hit_particle_intensity", "粒子强度");
         ZH.put("option.hit_particle_intensity.tooltip", "粒子数量的倍数");
-
-        ZH.put("option.fast_map", "方块状态 FastMap");
-        ZH.put("option.fast_map.tooltip", "用共享缓存替换方块状态邻居表（约省 600MB 内存）");
         ZH.put("option.entity_culling", "实体剔除");
         ZH.put("option.entity_culling.tooltip", "跳过被方块遮挡的实体渲染（仅在视锥体剔除之后追加判断）");
         ZH.put("option.entity_culling_range", "剔除检测距离");
@@ -374,7 +358,6 @@ public class LangUtil {
         ZH.put("option.item_entity_culling.tooltip", "跳过超过设定距离的掉落物渲染");
         ZH.put("option.item_entity_max_distance", "掉落物渲染距离");
         ZH.put("option.item_entity_max_distance.tooltip", "掉落物的最大渲染距离");
-
         ZH.put("option.lunar_hud_enabled", "农历 HUD");
         ZH.put("option.lunar_hud_enabled.tooltip", "在 HUD 上显示农历日期、节气与传统节日");
         ZH.put("option.lunar_hud_corner", "农历 HUD 位置");
@@ -390,13 +373,10 @@ public class LangUtil {
         ZH.put("option.lunar_festival_effect", "节日粒子");
         ZH.put("option.lunar_festival_effect.tooltip", "重大节日当天在玩家周围生成节日粒子");
         ZH.put("option.lunar_holiday_scope", "节日范围");
-        ZH.put("option.lunar_holiday_scope.tooltip",
-                "CHINA_ONLY = 仅中国节日，INTERNATIONAL = 加国际节日，ALL = 所有国家节日");
+        ZH.put("option.lunar_holiday_scope.tooltip", "CHINA_ONLY = 仅中国节日，INTERNATIONAL = 加国际节日，ALL = 所有国家节日");
         ZH.put("enum.CHINA_ONLY", "仅中国");
         ZH.put("enum.INTERNATIONAL", "国际");
         ZH.put("enum.ALL", "所有国家");
-
-        // ===== 节日翻译（中文） =====
         ZH.put("ribbon.holiday.spring_festival", "春节");
         ZH.put("ribbon.holiday.lantern_festival", "元宵节");
         ZH.put("ribbon.holiday.qingming", "清明节");
@@ -509,12 +489,9 @@ public class LangUtil {
         ZH.put("option.click_effect_ui_widgets_only.tooltip", "只在点击到按钮/控件时触发特效");
         ZH.put("option.click_effect_mute_vanilla", "静音原版音效");
         ZH.put("option.click_effect_mute_vanilla.tooltip", "触发特效时取消原版按钮点击音效");
-
-        // ===== 音乐播放器（中文） =====
         ZH.put("ribbon.page.music", "Ribbon · 音乐");
         ZH.put("option.music_player_enabled", "音乐播放器");
-        ZH.put("option.music_player_enabled.tooltip",
-                "启用内置 MP3 播放器。把 .mp3 文件放进 .minecraft/ribbon_music/");
+        ZH.put("option.music_player_enabled.tooltip", "启用内置 MP3 播放器。把 .mp3 文件放进 .minecraft/ribbon_music/");
         ZH.put("option.music_hud_enabled", "显示音乐 HUD");
         ZH.put("option.music_hud_enabled.tooltip", "在屏幕上显示当前播放的曲目");
         ZH.put("option.music_hud_corner", "音乐 HUD 位置");
@@ -526,6 +503,9 @@ public class LangUtil {
         ZH.put("music.track_count", "已加载 %d 首");
         ZH.put("music.screen.title", "音乐播放器");
         ZH.put("music.screen.hint", "点击曲目播放  ·  K 播放/暂停  ·  . 下一首  ·  , 上一首  ·  ESC 关闭");
+        ZH.put("enum.BLUE_GREEN", "蓝绿");
+        ZH.put("enum.PURPLE_YELLOW", "紫黄");
+        ZH.put("enum.PURPLE_GREEN_YELLOW", "紫绿黄");
     }
 
     public static String tr(String key) {
@@ -543,7 +523,6 @@ public class LangUtil {
         return String.format(tr(key), arg);
     }
 
-    /** 节日翻译，输入 festivalId，返回本地化名称 */
     public static String trHoliday(String holidayId) {
         if (holidayId == null) return "";
         return tr("ribbon.holiday." + holidayId);

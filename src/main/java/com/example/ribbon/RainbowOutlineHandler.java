@@ -39,6 +39,7 @@ public class RainbowOutlineHandler {
         VoxelShape shape = state.getShape(level, target.getBlockPos());
         if (shape.isEmpty()) return;
 
+        // 3秒一个循环
         float time = (System.currentTimeMillis() % 3000) / 3000.0F;
         float r, g, b;
 
@@ -52,6 +53,41 @@ public class RainbowOutlineHandler {
                 r = Mth.sin(time * (float) Math.PI * 2) * 0.5F + 0.5F;
                 g = Mth.sin((time + 1.0F / 3.0F) * (float) Math.PI * 2) * 0.5F + 0.5F;
                 b = 1.0F - g;
+                break;
+            case BLUE_GREEN:
+                // 蓝绿渐变：红=0，绿与蓝在 0-1 之间互补反向呼吸
+                r = 0.0F;
+                g = Mth.sin(time * (float) Math.PI * 2) * 0.5F + 0.5F;
+                b = 1.0F - g;
+                break;
+            case PURPLE_YELLOW:
+                // 紫黄渐变：红=1，绿与蓝互补（蓝=1绿=0是紫，蓝=0绿=1是黄）
+                r = 1.0F;
+                g = Mth.sin(time * (float) Math.PI * 2) * 0.5F + 0.5F;
+                b = 1.0F - g;
+                break;
+            case PURPLE_GREEN_YELLOW:
+                // 紫绿黄三色平滑循环
+                float cycle = time * 3.0F; // 将 0~1 的 time 放大到 0~3
+                int phase = (int) cycle % 3; // 当前处于哪个阶段（0, 1, 2）
+                float t = cycle - (int) cycle; // 当前阶段的进度（0.0~1.0）
+                float smoothT = (1.0F - Mth.cos(t * (float) Math.PI)) * 0.5F; // 平滑插值，防止突变
+
+                float[] c1, c2;
+                if (phase == 0) {
+                    c1 = new float[]{0.8F, 0.2F, 1.0F}; // 紫
+                    c2 = new float[]{0.2F, 1.0F, 0.2F}; // 绿
+                } else if (phase == 1) {
+                    c1 = new float[]{0.2F, 1.0F, 0.2F}; // 绿
+                    c2 = new float[]{1.0F, 1.0F, 0.2F}; // 黄
+                } else {
+                    c1 = new float[]{1.0F, 1.0F, 0.2F}; // 黄
+                    c2 = new float[]{0.8F, 0.2F, 1.0F}; // 紫
+                }
+
+                r = Mth.lerp(smoothT, c1[0], c2[0]);
+                g = Mth.lerp(smoothT, c1[1], c2[1]);
+                b = Mth.lerp(smoothT, c1[2], c2[2]);
                 break;
             case RAINBOW:
             default:

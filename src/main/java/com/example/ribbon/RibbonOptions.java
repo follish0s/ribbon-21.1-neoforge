@@ -285,14 +285,6 @@ public class RibbonOptions {
         OptionGroup.Builder group = OptionGroup.createBuilder().setId(id("performance_group"));
 
         group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
-                .setId(id("fast_map"))
-                .setName(Component.literal(LangUtil.tr("option.fast_map")))
-                .setTooltip(Component.literal(LangUtil.tr("option.fast_map.tooltip")))
-                .setBinding((d, v) -> Config.FAST_MAP_ENABLED.set(v),
-                        d -> Config.isFastMapEnabled())
-                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
-
-        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
                 .setId(id("entity_culling"))
                 .setName(Component.literal(LangUtil.tr("option.entity_culling")))
                 .setTooltip(Component.literal(LangUtil.tr("option.entity_culling.tooltip")))
@@ -464,11 +456,10 @@ public class RibbonOptions {
                 ImmutableList.of(group.build()));
     }
 
-    // ============ 页面 7：动态光源（含光照等级 HUD） ============
+    // ============ 页面 7：动态光源 ============
     private static OptionPage buildDynamicLightPage() {
         OptionGroup.Builder group = OptionGroup.createBuilder().setId(id("dynamic_light_group"));
 
-        // ===== 光照等级 HUD（从 HUD 页面挪过来） =====
         group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
                 .setId(id("light_level_hud"))
                 .setName(Component.literal(LangUtil.tr("option.light_level_hud")))
@@ -496,7 +487,6 @@ public class RibbonOptions {
                         v -> Component.literal(String.format("%.1fx", v / 10.0))))
                 .setImpact(OptionImpact.LOW).build());
 
-        // ===== 动态光源 =====
         group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
                 .setId(id("dynamic_light_enabled"))
                 .setName(Component.literal(LangUtil.tr("option.dynamic_light_enabled")))
@@ -567,8 +557,7 @@ public class RibbonOptions {
                 .setTooltip(Component.literal(LangUtil.tr("option.dynamic_light_update_interval.tooltip")))
                 .setBinding((d, v) -> Config.DYNAMIC_LIGHT_UPDATE_INTERVAL.set(v),
                         d -> Config.getDynamicLightUpdateInterval())
-                .setControl(o -> new SliderControl(o, 1, 20, 1,
-                        v -> Component.literal(v + " ticks")))
+                .setControl(o -> new SliderControl(o, 1, 20, 1, v -> Component.literal(v + " ticks")))
                 .setImpact(OptionImpact.LOW).build());
 
         group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
@@ -620,7 +609,7 @@ public class RibbonOptions {
                 ImmutableList.of(group.build()));
     }
 
-    // ============ 页面 8：音乐播放器 ============
+    // ============ 页面 8：音乐 ============
     private static OptionPage buildMusicPage() {
         OptionGroup.Builder group = OptionGroup.createBuilder().setId(id("music_group"));
 
@@ -673,6 +662,15 @@ public class RibbonOptions {
                 .setTooltip(Component.literal(LangUtil.tr("option.shader_compatibility_warning.tooltip")))
                 .setBinding((d, v) -> Config.SHADER_COMPATIBILITY_WARNING.set(v),
                         d -> Config.isShaderCompatibilityWarningEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        // 新增：高级 F3 调试信息开关
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("show_advanced_debug"))
+                .setName(Component.literal(LangUtil.tr("option.show_advanced_debug")))
+                .setTooltip(Component.literal(LangUtil.tr("option.show_advanced_debug.tooltip")))
+                .setBinding((d, v) -> Config.SHOW_ADVANCED_DEBUG.set(v),
+                        d -> Config.isShowAdvancedDebug())
                 .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
 
         return new OptionPage(
