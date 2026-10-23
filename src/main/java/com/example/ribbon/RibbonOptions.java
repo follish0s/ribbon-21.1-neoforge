@@ -335,6 +335,58 @@ public class RibbonOptions {
                 .setControl(o -> new SliderControl(o, 16, 128, 8, v -> Component.literal(v + "m")))
                 .setImpact(OptionImpact.LOW).build());
 
+        // ===== FSR 1.0 配置 =====
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("fsr_enabled"))
+                .setName(Component.literal(LangUtil.tr("option.fsr_enabled")))
+                .setTooltip(Component.literal(LangUtil.tr("option.fsr_enabled.tooltip")))
+                .setBinding((d, v) -> Config.FSR_ENABLED.set(v), d -> Config.isFsrEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.MEDIUM).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("fsr_render_scale"))
+                .setName(Component.literal(LangUtil.tr("option.fsr_render_scale")))
+                .setTooltip(Component.literal(LangUtil.tr("option.fsr_render_scale.tooltip")))
+                .setBinding((d, v) -> Config.FSR_RENDER_SCALE.set(v / 100.0), d -> (int)(Config.getFsrRenderScale() * 100))
+                .setControl(o -> new SliderControl(o, 50, 100, 5, v -> Component.literal(v + "%")))
+                .setImpact(OptionImpact.MEDIUM).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("fsr_sharpness"))
+                .setName(Component.literal(LangUtil.tr("option.fsr_sharpness")))
+                .setTooltip(Component.literal(LangUtil.tr("option.fsr_sharpness.tooltip")))
+                .setBinding((d, v) -> Config.FSR_SHARPNESS.set(v / 100.0), d -> (int)(Config.getFsrSharpness() * 100))
+                .setControl(o -> new SliderControl(o, 0, 100, 5, v -> Component.literal(v + "%")))
+                .setImpact(OptionImpact.LOW).build());
+
+        // ===== 以下为新增：极速材质加载配置 =====
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("fast_texture_loading"))
+                .setName(Component.literal(LangUtil.tr("option.fast_texture_loading")))
+                .setTooltip(Component.literal(LangUtil.tr("option.fast_texture_loading.tooltip")))
+                .setBinding((d, v) -> Config.FAST_TEXTURE_LOADING.set(v),
+                        d -> Config.isFastTextureLoadingEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.MEDIUM).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("texture_loading_threads"))
+                .setName(Component.literal(LangUtil.tr("option.texture_loading_threads")))
+                .setTooltip(Component.literal(LangUtil.tr("option.texture_loading_threads.tooltip")))
+                .setBinding((d, v) -> {
+                    Config.TEXTURE_LOADING_THREADS.set(v);
+                    com.example.ribbon.util.TextureThreadPool.init(); // 调完立刻重启线程池
+                }, d -> Config.getTextureLoadingThreads())
+                .setControl(o -> new SliderControl(o, 1, 8, 1, v -> Component.literal(v + " Threads")))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("texture_debug_log"))
+                .setName(Component.literal(LangUtil.tr("option.texture_debug_log")))
+                .setTooltip(Component.literal(LangUtil.tr("option.texture_debug_log.tooltip")))
+                .setBinding((d, v) -> Config.TEXTURE_DEBUG_LOG.set(v),
+                        d -> Config.isTextureDebugLogEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
         return new OptionPage(
                 OptionIdentifier.create(id("page_performance")),
                 Component.literal(LangUtil.tr("ribbon.page.performance")),
@@ -664,7 +716,6 @@ public class RibbonOptions {
                         d -> Config.isShaderCompatibilityWarningEnabled())
                 .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
 
-        // 新增：高级 F3 调试信息开关
         group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
                 .setId(id("show_advanced_debug"))
                 .setName(Component.literal(LangUtil.tr("option.show_advanced_debug")))

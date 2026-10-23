@@ -61,6 +61,11 @@ public class Config {
     public static final ModConfigSpec.BooleanValue ITEM_ENTITY_CULLING_ENABLED;
     public static final ModConfigSpec.IntValue ITEM_ENTITY_MAX_DISTANCE;
 
+    // ===== 新增：极速材质加载配置 =====
+    public static final ModConfigSpec.BooleanValue FAST_TEXTURE_LOADING;
+    public static final ModConfigSpec.IntValue TEXTURE_LOADING_THREADS;
+    public static final ModConfigSpec.BooleanValue TEXTURE_DEBUG_LOG;
+
     public static final ModConfigSpec.BooleanValue LUNAR_HUD_ENABLED;
     public static final ModConfigSpec.EnumValue<OverlayCorner> LUNAR_HUD_CORNER;
     public static final ModConfigSpec.DoubleValue LUNAR_HUD_SCALE;
@@ -94,6 +99,11 @@ public class Config {
     public static final ModConfigSpec.BooleanValue MUSIC_PLAYER_ENABLED;
     public static final ModConfigSpec.BooleanValue MUSIC_HUD_ENABLED;
     public static final ModConfigSpec.EnumValue<OverlayCorner> MUSIC_HUD_CORNER;
+
+    // ===== FSR 1.0 (EASU + RCAS) =====
+    public static final ModConfigSpec.BooleanValue FSR_ENABLED;
+    public static final ModConfigSpec.DoubleValue FSR_RENDER_SCALE;
+    public static final ModConfigSpec.DoubleValue FSR_SHARPNESS;
 
     public static final ModConfigSpec SPEC;
 
@@ -165,6 +175,12 @@ public class Config {
         BLOCK_ENTITY_CULLING_RANGE = BUILDER.comment("方块实体遮挡检测最大距离（格）").defineInRange("blockEntityCullingRange", 64, 16, 128);
         ITEM_ENTITY_CULLING_ENABLED = BUILDER.comment("剔除远处的掉落物").define("itemEntityCullingEnabled", true);
         ITEM_ENTITY_MAX_DISTANCE = BUILDER.comment("掉落物的最大渲染距离（格）").defineInRange("itemEntityMaxDistance", 64, 16, 128);
+
+        // ===== 极速材质加载配置项 =====
+        FAST_TEXTURE_LOADING = BUILDER.comment("启用极速材质加载（异步解析）", "注意：可能与部分优化模组（如 ModernFix）冲突").define("fastTextureLoading", false);
+        TEXTURE_LOADING_THREADS = BUILDER.comment("材质加载并发线程数", "过高可能导致内存溢出崩溃，建议 2-4").defineInRange("textureLoadingThreads", 2, 1, 8);
+        TEXTURE_DEBUG_LOG = BUILDER.comment("输出材质加载调试日志（会刷屏）").define("textureDebugLog", false);
+
         BUILDER.pop();
 
         BUILDER.push("lunar");
@@ -203,6 +219,18 @@ public class Config {
         DYNAMIC_LIGHT_ITEM_MIN_LIGHT = BUILDER.comment("最低物品发光阈值").defineInRange("itemMinLight", 8, 1, 15);
         BUILDER.pop();
 
+        BUILDER.push("fsr");
+        FSR_ENABLED = BUILDER.comment("启用 AMD FSR 1.0 后处理管线（EASU 上采样 + RCAS 锐化）",
+                "通过降低内部渲染分辨率并智能上采样来提升帧率",
+                "如果 Shader 编译失败或 FBO 不完整会自动 fallback 到原版渲染").define("enabled", false);
+        FSR_RENDER_SCALE = BUILDER.comment("内部渲染分辨率缩放比例",
+                "0.5 = 半分辨率（最大性能提升），0.75 = 75%（平衡），1.0 = 仅锐化不上采样")
+                .defineInRange("renderScale", 0.75, 0.5, 1.0);
+        FSR_SHARPNESS = BUILDER.comment("RCAS 锐化强度",
+                "0.0 = 无锐化，0.2 = 推荐值，1.0 = 最大锐化（可能出现伪影）")
+                .defineInRange("sharpness", 0.2, 0.0, 1.0);
+        BUILDER.pop();
+
         SPEC = BUILDER.build();
     }
 
@@ -213,6 +241,10 @@ public class Config {
     public static boolean isShowAdvancedDebug() { try { return SHOW_ADVANCED_DEBUG.get(); } catch (IllegalStateException e) { return true; } }
     public static boolean isHitParticlesEnabled() { try { return HIT_PARTICLES.get(); } catch (IllegalStateException e) { return true; } }
     public static boolean isClickEffectCoverUi() { try { return CLICK_EFFECT_COVER_UI.get(); } catch (IllegalStateException e) { return true; } }
+    public static ClickEffectType getClickEffectType() {
+        try { return CLICK_EFFECT_TYPE.get(); }
+        catch (IllegalStateException e) { return ClickEffectType.RIPPLE; } // 默认返回涟漪，防止崩溃
+    }
     public static boolean isClickEffectUiOnlyOnWidgets() { try { return CLICK_EFFECT_UI_ONLY_ON_WIDGETS.get(); } catch (IllegalStateException e) { return false; } }
     public static boolean isClickEffectMuteVanilla() { try { return CLICK_EFFECT_MUTE_VANILLA.get(); } catch (IllegalStateException e) { return false; } }
     public static boolean isEntityCullingEnabled() { try { return ENTITY_CULLING_ENABLED.get(); } catch (IllegalStateException e) { return true; } }
@@ -223,6 +255,12 @@ public class Config {
     public static int getBlockEntityCullingRange() { try { return BLOCK_ENTITY_CULLING_RANGE.get(); } catch (IllegalStateException e) { return 64; } }
     public static boolean isItemEntityCullingEnabled() { try { return ITEM_ENTITY_CULLING_ENABLED.get(); } catch (IllegalStateException e) { return true; } }
     public static int getItemEntityMaxDistance() { try { return ITEM_ENTITY_MAX_DISTANCE.get(); } catch (IllegalStateException e) { return 64; } }
+
+    // ===== 极速材质加载 Getter =====
+    public static boolean isFastTextureLoadingEnabled() { try { return FAST_TEXTURE_LOADING.get(); } catch (IllegalStateException e) { return false; } }
+    public static int getTextureLoadingThreads() { try { return TEXTURE_LOADING_THREADS.get(); } catch (IllegalStateException e) { return 2; } }
+    public static boolean isTextureDebugLogEnabled() { try { return TEXTURE_DEBUG_LOG.get(); } catch (IllegalStateException e) { return false; } }
+
     public static boolean isLunarHudEnabled() { try { return LUNAR_HUD_ENABLED.get(); } catch (IllegalStateException e) { return true; } }
     public static OverlayCorner getLunarHudCorner() { try { return LUNAR_HUD_CORNER.get(); } catch (IllegalStateException e) { return OverlayCorner.BOTTOM_LEFT; } }
     public static double getLunarHudScale() { try { return LUNAR_HUD_SCALE.get(); } catch (IllegalStateException e) { return 1.0; } }
@@ -258,6 +296,11 @@ public class Config {
     public static boolean isMusicHudEnabled() { try { return MUSIC_HUD_ENABLED.get(); } catch (IllegalStateException e) { return true; } }
     public static OverlayCorner getMusicHudCorner() { try { return MUSIC_HUD_CORNER.get(); } catch (IllegalStateException e) { return OverlayCorner.BOTTOM_RIGHT; } }
     public static int getHitParticleIntensity() { try { return HIT_PARTICLE_INTENSITY.get(); } catch (IllegalStateException e) { return 3; } }
+
+    // ===== FSR Getter =====
+    public static boolean isFsrEnabled() { try { return FSR_ENABLED.get(); } catch (IllegalStateException e) { return false; } }
+    public static double getFsrRenderScale() { try { return FSR_RENDER_SCALE.get(); } catch (IllegalStateException e) { return 0.75; } }
+    public static double getFsrSharpness() { try { return FSR_SHARPNESS.get(); } catch (IllegalStateException e) { return 0.2; } }
 
     public enum OverlayCorner { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT }
     public enum OutlineColorMode { RAINBOW, BLUE_PURPLE, GREEN_PURPLE, BLUE_GREEN, PURPLE_YELLOW, PURPLE_GREEN_YELLOW }

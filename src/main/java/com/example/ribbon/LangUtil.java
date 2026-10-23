@@ -256,7 +256,21 @@ public class LangUtil {
         EN.put("enum.BLUE_GREEN", "Blue-Green");
         EN.put("enum.PURPLE_YELLOW", "Purple-Yellow");
         EN.put("enum.PURPLE_GREEN_YELLOW", "Purple-Green-Yellow");
-        EN.put("damage.crit", "Crit!");
+        EN.put("log.texture.pool_init", "Initialized Texture Loader Thread Pool with %d threads.");
+        EN.put("log.texture.reload", "Detected resource reload, cleared cache index.");
+        EN.put("msg.modernfix_warn", "Ribbon disabled Fast Texture Loading due to ModernFix.");
+        EN.put("option.fast_texture_loading", "Fast Texture Loading (Experimental)");
+        EN.put("option.fast_texture_loading.tooltip", "Asynchronously parse textures and generate mipmaps to reduce loading stutter. May conflict with ModernFix.");
+        EN.put("option.texture_loading_threads", "Texture Loading Threads");
+        EN.put("option.texture_loading_threads.tooltip", "Number of threads for async texture loading. Higher is not always better.");
+        EN.put("option.texture_debug_log", "Texture Loading Debug Log");
+        EN.put("option.texture_debug_log.tooltip", "Print detailed timing and cache hit logs to the console.");
+        EN.put("option.fsr_enabled", "FSR 1.0 Super Resolution (Experimental)");
+        EN.put("option.fsr_enabled.tooltip", "Enables FSR upscaling and sharpening. May conflict with shaders.");
+        EN.put("option.fsr_render_scale", "Internal Render Scale");
+        EN.put("option.fsr_render_scale.tooltip", "0.5 = Half res (best performance), 1.0 = Native res (sharpen only)");
+        EN.put("option.fsr_sharpness", "RCAS Sharpness");
+        EN.put("option.fsr_sharpness.tooltip", "0 = None, 20 = Recommended, 100 = Over-sharpen");
 
         // ===== 中文 =====
         ZH.put("ribbon.page", "Ribbon");
@@ -506,6 +520,22 @@ public class LangUtil {
         ZH.put("enum.BLUE_GREEN", "蓝绿");
         ZH.put("enum.PURPLE_YELLOW", "紫黄");
         ZH.put("enum.PURPLE_GREEN_YELLOW", "紫绿黄");
+        ZH.put("log.texture.pool_init", "已初始化材质加载线程池，线程数：%d。");
+        ZH.put("log.texture.reload", "检测到资源重载，已清理缓存索引。");
+        ZH.put("msg.modernfix_warn", "由于检测到 ModernFix，Ribbon 已自动禁用极速材质加载。");
+        ZH.put("option.fast_texture_loading", "极速材质加载（实验性）");
+        ZH.put("option.fast_texture_loading.tooltip", "异步解析材质并生成 Mipmap，减少加载卡顿。可能与 ModernFix 冲突。");
+        ZH.put("option.texture_loading_threads", "材质加载线程数");
+        ZH.put("option.texture_loading_threads.tooltip", "异步加载材质的线程数量，过高可能导致内存溢出。");
+        ZH.put("option.texture_debug_log", "材质加载调试日志");
+        ZH.put("option.texture_debug_log.tooltip", "在控制台输出详细的解析耗时和缓存命中情况。");
+        ZH.put("option.fsr_enabled", "FSR 1.0 超分辨率 (实验性)");
+        ZH.put("option.fsr_enabled.tooltip", "开启 FSR 上采样与锐化，可能会与光影冲突");
+        ZH.put("option.fsr_render_scale", "内部渲染缩放");
+        ZH.put("option.fsr_render_scale.tooltip", "0.5 = 半分辨率（最流畅），1.0 = 原生分辨率（仅锐化）");
+        ZH.put("option.fsr_sharpness", "RCAS 锐化强度");
+        ZH.put("option.fsr_sharpness.tooltip", "0 = 无锐化，20 = 推荐，100 = 过度锐化");
+
     }
 
     public static String tr(String key) {

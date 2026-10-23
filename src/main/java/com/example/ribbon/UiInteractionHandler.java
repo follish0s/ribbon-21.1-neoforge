@@ -24,7 +24,8 @@ public final class UiInteractionHandler {
             return;
         }
 
-        Config.ClickEffectType type = Config.CLICK_EFFECT_TYPE.get();
+        // 🚨 修复：使用安全方法，防止加载界面点击时崩溃
+        Config.ClickEffectType type = Config.getClickEffectType();
         if (type == Config.ClickEffectType.NONE) return;
 
         Minecraft mc = Minecraft.getInstance();
