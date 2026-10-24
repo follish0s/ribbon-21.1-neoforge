@@ -30,8 +30,8 @@ public class MusicPlayerScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        // ===== 纯黑背景 =====
-        g.fill(0, 0, this.width, this.height, 0xFF000000);
+        // ===== 液态玻璃背景 =====
+        drawLiquidGlassBackground(g);
 
         // ===== 点缀 1：四角直角标记 =====
         drawCorner(g, 8, 8, 1, 1);
@@ -41,7 +41,7 @@ public class MusicPlayerScreen extends Screen {
 
         // ===== 点缀 2：标题下方装饰线 =====
         int decoW = 80;
-        g.fill((this.width - decoW) / 2, 38, (this.width + decoW) / 2, 39, 0x66FFFFFF);
+        g.fill((this.width - decoW) / 2, 38, (this.width + decoW) / 2, 39, 0x44FFFFFF);
 
         // ===== 标题 =====
         String title = LangUtil.tr("music.screen.title");
@@ -116,15 +116,46 @@ public class MusicPlayerScreen extends Screen {
     }
 
     /**
-     * 绘制底部的播放控制栏
+     * 液态玻璃背景：多层半透明叠加模拟高斯模糊毛玻璃效果。
+     * <p>
+     * Minecraft 没有可编程的后处理 blur，因此用 5 层递进的半透明矩形
+     * 叠加出由外向内逐渐变深的渐变效果，视觉上近似磨砂玻璃。
+     */
+    private void drawLiquidGlassBackground(GuiGraphics g) {
+        int w = this.width, h = this.height;
+
+        // 第 1 层：最浅底色（让背后的游戏画面隐约可见）
+        g.fill(0, 0, w, h, 0x99000000);
+
+        // 第 2-5 层：向中心收缩的渐晕层（每层加深一点，模拟景深模糊）
+        int shrink = 0;
+        int[] layers = {0x0DFFFFFF, 0x0AFFFFFF, 0x08FFFFFF, 0x05FFFFFF};
+        for (int alpha : layers) {
+            shrink += 40;
+            if (shrink * 2 < w && shrink * 2 < h) {
+                g.fill(shrink, shrink, w - shrink, h - shrink, alpha);
+            }
+        }
+
+        // 顶部高光条（模拟玻璃表面的环境光反射）
+        g.fill(0, 0, w, 1, 0x33FFFFFF);
+        g.fill(0, 1, w, 2, 0x1AFFFFFF);
+
+        // 底部暗边
+        g.fill(0, h - 1, w, h, 0x33000000);
+    }
+
+    /**
+     * 绘制底部的播放控制栏（液态玻璃风格）
      */
     private void drawControlBar(GuiGraphics g, int mouseX, int mouseY) {
         int top = this.height - CONTROL_BAR_HEIGHT;
 
-        // 控制栏背景（半透明黑）
-        g.fill(0, top, this.width, this.height, 0xE6000000);
-        // 顶部细线
-        g.fill(0, top, this.width, top + 1, 0x33FFFFFF);
+        // 控制栏：半透明毛玻璃
+        g.fill(0, top, this.width, this.height, 0xAA000000);
+        g.fill(0, top, this.width, this.height, 0x11FFFFFF);
+        // 顶部高光细线
+        g.fill(0, top, this.width, top + 1, 0x44FFFFFF);
 
         Mp3Player player = MusicPlayerManager.getPlayer();
         boolean hasTrack = MusicPlayerManager.getCurrentIndex() >= 0;

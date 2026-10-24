@@ -271,9 +271,37 @@ public class LangUtil {
         EN.put("option.fsr_render_scale.tooltip", "0.5 = Half res (best performance), 1.0 = Native res (sharpen only)");
         EN.put("option.fsr_sharpness", "RCAS Sharpness");
         EN.put("option.fsr_sharpness.tooltip", "0 = None, 20 = Recommended, 100 = Over-sharpen");
+        EN.put("option.info_hud_enabled", "Info HUD");
+        EN.put("option.info_hud_enabled.tooltip", "Show coordinates, biome, CPS, and armor durability on screen");
+        EN.put("option.info_hud_corner", "Info HUD position");
+        EN.put("option.info_hud_corner.tooltip", "Which corner to draw the Info HUD");
+        EN.put("option.info_hud_scale", "Info HUD scale");
+        EN.put("option.info_hud_scale.tooltip", "Text size multiplier for the Info HUD");
+
+        // ===== 内存优化 (英文) =====
+        EN.put("option.memory_optimization_enabled", "Deep Memory Optimizer (FerriteCore-like)");
+        EN.put("option.memory_optimization_enabled.tooltip", "Deduplicates shapes, property maps, and strings to reduce RAM usage.");
+        EN.put("option.memory_shape_dedup", "Shape Deduplication");
+        EN.put("option.memory_shape_dedup.tooltip", "Shares identical collision shapes across BlockStates.");
+        EN.put("option.memory_property_map_dedup", "Property Map Deduplication");
+        EN.put("option.memory_property_map_dedup.tooltip", "Shares identical property maps. Huge gain for property-less blocks.");
+        EN.put("option.memory_model_interning", "Model Location Interning");
+        EN.put("option.memory_model_interning.tooltip", "Reuses identical ModelResourceLocation instances to save string memory.");
+        EN.put("option.memory_multipart_predicate", "Multipart Predicate Cache");
+        EN.put("option.memory_multipart_predicate.tooltip", "Caches lambda predicates for multipart models during baking.");
+        EN.put("option.memory_chunk_nbt_trim", "Chunk NBT Trimming");
+        EN.put("option.memory_chunk_nbt_trim.tooltip", "Clears processed block entity NBT after chunk load. (High risk, off by default)");
+        EN.put("option.memory_show_in_hud", "Show Memory Stats in HUD");
+        EN.put("option.memory_show_in_hud.tooltip", "Displays cache hits and saved objects in the Info HUD.");
 
         // ===== 中文 =====
         ZH.put("ribbon.page", "Ribbon");
+        ZH.put("option.info_hud_enabled", "信息 HUD");
+        ZH.put("option.info_hud_enabled.tooltip", "在屏幕上显示坐标、生物群系、CPS 和装备耐久");
+        ZH.put("option.info_hud_corner", "信息 HUD 位置");
+        ZH.put("option.info_hud_corner.tooltip", "信息 HUD 显示在屏幕的哪个角落");
+        ZH.put("option.info_hud_scale", "信息 HUD 缩放");
+        ZH.put("option.info_hud_scale.tooltip", "信息 HUD 文字大小的倍数");
         ZH.put("damage.crit", "暴击!");
         ZH.put("option.show_overlay", "显示 FPS/TPS 悬浮窗");
         ZH.put("option.show_overlay.tooltip", "在 HUD 上显示 FPS/TPS 文本");
@@ -536,6 +564,21 @@ public class LangUtil {
         ZH.put("option.fsr_sharpness", "RCAS 锐化强度");
         ZH.put("option.fsr_sharpness.tooltip", "0 = 无锐化，20 = 推荐，100 = 过度锐化");
 
+        // ===== 内存优化 (中文) =====
+        ZH.put("option.memory_optimization_enabled", "深度内存优化 (对标 FerriteCore)");
+        ZH.put("option.memory_optimization_enabled.tooltip", "对方块形状、属性表、字符串进行全局去重，大幅降低内存占用。");
+        ZH.put("option.memory_shape_dedup", "形状去重");
+        ZH.put("option.memory_shape_dedup.tooltip", "让碰撞箱相同的方块共享同一份内存。");
+        ZH.put("option.memory_property_map_dedup", "属性表去重");
+        ZH.put("option.memory_property_map_dedup.tooltip", "无属性方块共享同一份属性表，收益极高。");
+        ZH.put("option.memory_model_interning", "模型路径驻留");
+        ZH.put("option.memory_model_interning.tooltip", "复用相同的模型定位符实例，减少字符串碎片。");
+        ZH.put("option.memory_multipart_predicate", "多部件谓词缓存");
+        ZH.put("option.memory_multipart_predicate.tooltip", "复用多部件模型生成的判断条件，加速模型烘焙。");
+        ZH.put("option.memory_chunk_nbt_trim", "区块 NBT 精简");
+        ZH.put("option.memory_chunk_nbt_trim.tooltip", "区块加载后清空已处理的方块实体 NBT。(高风险，默认关闭)");
+        ZH.put("option.memory_show_in_hud", "在 HUD 显示内存统计");
+        ZH.put("option.memory_show_in_hud.tooltip", "在信息 HUD 中显示缓存命中和节省的对象数。");
     }
 
     public static String tr(String key) {

@@ -116,6 +116,32 @@ public class RibbonOptions {
                         v -> Component.literal(String.format("%.1fs", v / 1000.0))))
                 .setImpact(OptionImpact.LOW).build());
 
+        // ===== 信息 HUD =====
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("info_hud_enabled"))
+                .setName(Component.literal(LangUtil.tr("option.info_hud_enabled")))
+                .setTooltip(Component.literal(LangUtil.tr("option.info_hud_enabled.tooltip")))
+                .setBinding((d, v) -> Config.INFO_HUD_ENABLED.set(v), d -> Config.isInfoHudEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Config.OverlayCorner.class, STORAGE)
+                .setId(id("info_hud_corner"))
+                .setName(Component.literal(LangUtil.tr("option.info_hud_corner")))
+                .setTooltip(Component.literal(LangUtil.tr("option.info_hud_corner.tooltip")))
+                .setBinding((d, v) -> Config.INFO_HUD_CORNER.set(v), d -> Config.getInfoHudCorner())
+                .setControl(o -> new CyclingControl<>(o, Config.OverlayCorner.class))
+                .setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Integer.class, STORAGE)
+                .setId(id("info_hud_scale"))
+                .setName(Component.literal(LangUtil.tr("option.info_hud_scale")))
+                .setTooltip(Component.literal(LangUtil.tr("option.info_hud_scale.tooltip")))
+                .setBinding((d, v) -> Config.INFO_HUD_SCALE.set(v / 10.0),
+                        d -> (int) Math.round(Config.getInfoHudScale() * 10.0))
+                .setControl(o -> new SliderControl(o, 5, 30, 1,
+                        v -> Component.literal(String.format("%.1fx", v / 10.0))))
+                .setImpact(OptionImpact.LOW).build());
+
         return new OptionPage(
                 OptionIdentifier.create(id("page_hud")),
                 Component.literal(LangUtil.tr("ribbon.page.hud")),
@@ -359,7 +385,7 @@ public class RibbonOptions {
                 .setControl(o -> new SliderControl(o, 0, 100, 5, v -> Component.literal(v + "%")))
                 .setImpact(OptionImpact.LOW).build());
 
-        // ===== 以下为新增：极速材质加载配置 =====
+        // ===== 极速材质加载配置 =====
         group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
                 .setId(id("fast_texture_loading"))
                 .setName(Component.literal(LangUtil.tr("option.fast_texture_loading")))
@@ -374,7 +400,7 @@ public class RibbonOptions {
                 .setTooltip(Component.literal(LangUtil.tr("option.texture_loading_threads.tooltip")))
                 .setBinding((d, v) -> {
                     Config.TEXTURE_LOADING_THREADS.set(v);
-                    com.example.ribbon.util.TextureThreadPool.init(); // 调完立刻重启线程池
+                    com.example.ribbon.util.TextureThreadPool.init();
                 }, d -> Config.getTextureLoadingThreads())
                 .setControl(o -> new SliderControl(o, 1, 8, 1, v -> Component.literal(v + " Threads")))
                 .setImpact(OptionImpact.LOW).build());
@@ -385,6 +411,56 @@ public class RibbonOptions {
                 .setTooltip(Component.literal(LangUtil.tr("option.texture_debug_log.tooltip")))
                 .setBinding((d, v) -> Config.TEXTURE_DEBUG_LOG.set(v),
                         d -> Config.isTextureDebugLogEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        // ===== 🚨 新增：内存深度优化 (FerriteCore-like) =====
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("memory_optimization_enabled"))
+                .setName(Component.literal(LangUtil.tr("option.memory_optimization_enabled")))
+                .setTooltip(Component.literal(LangUtil.tr("option.memory_optimization_enabled.tooltip")))
+                .setBinding((d, v) -> Config.MEMORY_OPTIMIZATION_ENABLED.set(v), d -> Config.isMemoryOptimizationEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.HIGH).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("memory_shape_dedup"))
+                .setName(Component.literal(LangUtil.tr("option.memory_shape_dedup")))
+                .setTooltip(Component.literal(LangUtil.tr("option.memory_shape_dedup.tooltip")))
+                .setBinding((d, v) -> Config.MEMORY_SHAPE_DEDUP.set(v), d -> Config.isShapeDedupEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.MEDIUM).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("memory_property_map_dedup"))
+                .setName(Component.literal(LangUtil.tr("option.memory_property_map_dedup")))
+                .setTooltip(Component.literal(LangUtil.tr("option.memory_property_map_dedup.tooltip")))
+                .setBinding((d, v) -> Config.MEMORY_PROPERTY_MAP_DEDUP.set(v), d -> Config.isPropertyMapDedupEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.MEDIUM).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("memory_model_interning"))
+                .setName(Component.literal(LangUtil.tr("option.memory_model_interning")))
+                .setTooltip(Component.literal(LangUtil.tr("option.memory_model_interning.tooltip")))
+                .setBinding((d, v) -> Config.MEMORY_MODEL_INTERNING.set(v), d -> Config.isModelInterningEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("memory_multipart_predicate"))
+                .setName(Component.literal(LangUtil.tr("option.memory_multipart_predicate")))
+                .setTooltip(Component.literal(LangUtil.tr("option.memory_multipart_predicate.tooltip")))
+                .setBinding((d, v) -> Config.MEMORY_MULTIPART_PREDICATE.set(v), d -> Config.isMultipartPredicateEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("memory_chunk_nbt_trim"))
+                .setName(Component.literal(LangUtil.tr("option.memory_chunk_nbt_trim")))
+                .setTooltip(Component.literal(LangUtil.tr("option.memory_chunk_nbt_trim.tooltip")))
+                .setBinding((d, v) -> Config.MEMORY_CHUNK_NBT_TRIM.set(v), d -> Config.isChunkNbtTrimEnabled())
+                .setControl(TickBoxControl::new).setImpact(OptionImpact.MEDIUM).build());
+
+        group.add(OptionImpl.createBuilder(Boolean.class, STORAGE)
+                .setId(id("memory_show_in_hud"))
+                .setName(Component.literal(LangUtil.tr("option.memory_show_in_hud")))
+                .setTooltip(Component.literal(LangUtil.tr("option.memory_show_in_hud.tooltip")))
+                .setBinding((d, v) -> Config.MEMORY_SHOW_IN_HUD.set(v), d -> Config.isMemoryShowInHudEnabled())
                 .setControl(TickBoxControl::new).setImpact(OptionImpact.LOW).build());
 
         return new OptionPage(

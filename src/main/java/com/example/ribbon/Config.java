@@ -100,6 +100,20 @@ public class Config {
     public static final ModConfigSpec.BooleanValue MUSIC_HUD_ENABLED;
     public static final ModConfigSpec.EnumValue<OverlayCorner> MUSIC_HUD_CORNER;
 
+    // ===== Info HUD（坐标/群系/CPS/装备耐久） =====
+    public static final ModConfigSpec.BooleanValue INFO_HUD_ENABLED;
+    public static final ModConfigSpec.EnumValue<OverlayCorner> INFO_HUD_CORNER;
+    public static final ModConfigSpec.DoubleValue INFO_HUD_SCALE;
+
+    // ===== 内存深度优化系统 (对标 FerriteCore) =====
+    public static final ModConfigSpec.BooleanValue MEMORY_OPTIMIZATION_ENABLED;
+    public static final ModConfigSpec.BooleanValue MEMORY_SHAPE_DEDUP;
+    public static final ModConfigSpec.BooleanValue MEMORY_PROPERTY_MAP_DEDUP;
+    public static final ModConfigSpec.BooleanValue MEMORY_MODEL_INTERNING;
+    public static final ModConfigSpec.BooleanValue MEMORY_MULTIPART_PREDICATE;
+    public static final ModConfigSpec.BooleanValue MEMORY_CHUNK_NBT_TRIM;
+    public static final ModConfigSpec.BooleanValue MEMORY_SHOW_IN_HUD;
+
     // ===== FSR 1.0 (EASU + RCAS) =====
     public static final ModConfigSpec.BooleanValue FSR_ENABLED;
     public static final ModConfigSpec.DoubleValue FSR_RENDER_SCALE;
@@ -176,11 +190,9 @@ public class Config {
         ITEM_ENTITY_CULLING_ENABLED = BUILDER.comment("剔除远处的掉落物").define("itemEntityCullingEnabled", true);
         ITEM_ENTITY_MAX_DISTANCE = BUILDER.comment("掉落物的最大渲染距离（格）").defineInRange("itemEntityMaxDistance", 64, 16, 128);
 
-        // ===== 极速材质加载配置项 =====
         FAST_TEXTURE_LOADING = BUILDER.comment("启用极速材质加载（异步解析）", "注意：可能与部分优化模组（如 ModernFix）冲突").define("fastTextureLoading", false);
         TEXTURE_LOADING_THREADS = BUILDER.comment("材质加载并发线程数", "过高可能导致内存溢出崩溃，建议 2-4").defineInRange("textureLoadingThreads", 2, 1, 8);
         TEXTURE_DEBUG_LOG = BUILDER.comment("输出材质加载调试日志（会刷屏）").define("textureDebugLog", false);
-
         BUILDER.pop();
 
         BUILDER.push("lunar");
@@ -219,16 +231,27 @@ public class Config {
         DYNAMIC_LIGHT_ITEM_MIN_LIGHT = BUILDER.comment("最低物品发光阈值").defineInRange("itemMinLight", 8, 1, 15);
         BUILDER.pop();
 
+        BUILDER.push("info_hud");
+        INFO_HUD_ENABLED = BUILDER.comment("启用综合信息 HUD（坐标/群系/CPS/装备耐久）").define("enabled", false);
+        INFO_HUD_CORNER = BUILDER.comment("信息 HUD 显示位置").defineEnum("corner", OverlayCorner.TOP_LEFT);
+        INFO_HUD_SCALE = BUILDER.comment("信息 HUD 文字缩放").defineInRange("scale", 1.0, 0.5, 3.0);
+        BUILDER.pop();
+
+        // 🚨 核心修复：千问漏掉的变量声明和初始化
+        BUILDER.push("memory");
+        MEMORY_OPTIMIZATION_ENABLED = BUILDER.comment("启用内存深度优化系统（对标 FerriteCore）", "通过 Mixin 注入对形状、属性表、模型定位符、多部件谓词做全局去重").define("enabled", true);
+        MEMORY_SHAPE_DEDUP = BUILDER.comment("碰撞箱/渲染形状全局去重").define("shapeDedup", true);
+        MEMORY_PROPERTY_MAP_DEDUP = BUILDER.comment("BlockState 属性表去重").define("propertyMapDedup", true);
+        MEMORY_MODEL_INTERNING = BUILDER.comment("ModelResourceLocation 字符串驻留").define("modelInterning", true);
+        MEMORY_MULTIPART_PREDICATE = BUILDER.comment("多部件模型谓词缓存").define("multipartPredicate", true);
+        MEMORY_CHUNK_NBT_TRIM = BUILDER.comment("区块加载后清空待处理方块实体 NBT (高风险，默认关闭)").define("chunkNbtTrim", false);
+        MEMORY_SHOW_IN_HUD = BUILDER.comment("在综合信息 HUD 中显示内存优化统计").define("showInHud", true);
+        BUILDER.pop();
+
         BUILDER.push("fsr");
-        FSR_ENABLED = BUILDER.comment("启用 AMD FSR 1.0 后处理管线（EASU 上采样 + RCAS 锐化）",
-                "通过降低内部渲染分辨率并智能上采样来提升帧率",
-                "如果 Shader 编译失败或 FBO 不完整会自动 fallback 到原版渲染").define("enabled", false);
-        FSR_RENDER_SCALE = BUILDER.comment("内部渲染分辨率缩放比例",
-                "0.5 = 半分辨率（最大性能提升），0.75 = 75%（平衡），1.0 = 仅锐化不上采样")
-                .defineInRange("renderScale", 0.75, 0.5, 1.0);
-        FSR_SHARPNESS = BUILDER.comment("RCAS 锐化强度",
-                "0.0 = 无锐化，0.2 = 推荐值，1.0 = 最大锐化（可能出现伪影）")
-                .defineInRange("sharpness", 0.2, 0.0, 1.0);
+        FSR_ENABLED = BUILDER.comment("启用 AMD FSR 1.0 后处理管线（EASU 上采样 + RCAS 锐化）").define("enabled", false);
+        FSR_RENDER_SCALE = BUILDER.comment("内部渲染分辨率缩放比例").defineInRange("renderScale", 0.75, 0.5, 1.0);
+        FSR_SHARPNESS = BUILDER.comment("RCAS 锐化强度").defineInRange("sharpness", 0.2, 0.0, 1.0);
         BUILDER.pop();
 
         SPEC = BUILDER.build();
@@ -237,16 +260,19 @@ public class Config {
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {}
 
+    // ================= 各种 get 方法 =================
     public static boolean isShaderCompatibilityWarningEnabled() { try { return SHADER_COMPATIBILITY_WARNING.get(); } catch (IllegalStateException e) { return true; } }
     public static boolean isShowAdvancedDebug() { try { return SHOW_ADVANCED_DEBUG.get(); } catch (IllegalStateException e) { return true; } }
     public static boolean isHitParticlesEnabled() { try { return HIT_PARTICLES.get(); } catch (IllegalStateException e) { return true; } }
     public static boolean isClickEffectCoverUi() { try { return CLICK_EFFECT_COVER_UI.get(); } catch (IllegalStateException e) { return true; } }
-    public static ClickEffectType getClickEffectType() {
-        try { return CLICK_EFFECT_TYPE.get(); }
-        catch (IllegalStateException e) { return ClickEffectType.RIPPLE; } // 默认返回涟漪，防止崩溃
-    }
     public static boolean isClickEffectUiOnlyOnWidgets() { try { return CLICK_EFFECT_UI_ONLY_ON_WIDGETS.get(); } catch (IllegalStateException e) { return false; } }
     public static boolean isClickEffectMuteVanilla() { try { return CLICK_EFFECT_MUTE_VANILLA.get(); } catch (IllegalStateException e) { return false; } }
+
+    public static ClickEffectType getClickEffectType() {
+        try { return CLICK_EFFECT_TYPE.get(); }
+        catch (IllegalStateException e) { return ClickEffectType.RIPPLE; }
+    }
+
     public static boolean isEntityCullingEnabled() { try { return ENTITY_CULLING_ENABLED.get(); } catch (IllegalStateException e) { return true; } }
     public static int getEntityCullingRange() { try { return ENTITY_CULLING_RANGE.get(); } catch (IllegalStateException e) { return 64; } }
     public static boolean isParticleCullingEnabled() { try { return PARTICLE_CULLING_ENABLED.get(); } catch (IllegalStateException e) { return true; } }
@@ -256,7 +282,6 @@ public class Config {
     public static boolean isItemEntityCullingEnabled() { try { return ITEM_ENTITY_CULLING_ENABLED.get(); } catch (IllegalStateException e) { return true; } }
     public static int getItemEntityMaxDistance() { try { return ITEM_ENTITY_MAX_DISTANCE.get(); } catch (IllegalStateException e) { return 64; } }
 
-    // ===== 极速材质加载 Getter =====
     public static boolean isFastTextureLoadingEnabled() { try { return FAST_TEXTURE_LOADING.get(); } catch (IllegalStateException e) { return false; } }
     public static int getTextureLoadingThreads() { try { return TEXTURE_LOADING_THREADS.get(); } catch (IllegalStateException e) { return 2; } }
     public static boolean isTextureDebugLogEnabled() { try { return TEXTURE_DEBUG_LOG.get(); } catch (IllegalStateException e) { return false; } }
@@ -297,7 +322,22 @@ public class Config {
     public static OverlayCorner getMusicHudCorner() { try { return MUSIC_HUD_CORNER.get(); } catch (IllegalStateException e) { return OverlayCorner.BOTTOM_RIGHT; } }
     public static int getHitParticleIntensity() { try { return HIT_PARTICLE_INTENSITY.get(); } catch (IllegalStateException e) { return 3; } }
 
-    // ===== FSR Getter =====
+    public static boolean isInfoHudEnabled() { try { return INFO_HUD_ENABLED.get(); } catch (IllegalStateException e) { return false; } }
+    public static OverlayCorner getInfoHudCorner() { try { return INFO_HUD_CORNER.get(); } catch (IllegalStateException e) { return OverlayCorner.TOP_LEFT; } }
+    public static double getInfoHudScale() { try { return INFO_HUD_SCALE.get(); } catch (IllegalStateException e) { return 1.0; } }
+
+    // ===== 内存优化 Getter =====
+    public static boolean isMemoryOptimizationEnabled() { try { return MEMORY_OPTIMIZATION_ENABLED.get(); } catch (IllegalStateException e) { return true; } }
+    public static boolean isShapeDedupEnabled() { try { return MEMORY_SHAPE_DEDUP.get(); } catch (IllegalStateException e) { return true; } }
+    public static boolean isPropertyMapDedupEnabled() { try { return MEMORY_PROPERTY_MAP_DEDUP.get(); } catch (IllegalStateException e) { return true; } }
+    public static boolean isModelInterningEnabled() { try { return MEMORY_MODEL_INTERNING.get(); } catch (IllegalStateException e) { return true; } }
+    public static boolean isMultipartPredicateEnabled() { try { return MEMORY_MULTIPART_PREDICATE.get(); } catch (IllegalStateException e) { return true; } }
+    public static boolean isMultipartPredicateDedupEnabled() {
+        return isMultipartPredicateEnabled();
+    }
+    public static boolean isChunkNbtTrimEnabled() { try { return MEMORY_CHUNK_NBT_TRIM.get(); } catch (IllegalStateException e) { return false; } }
+    public static boolean isMemoryShowInHudEnabled() { try { return MEMORY_SHOW_IN_HUD.get(); } catch (IllegalStateException e) { return true; } }
+
     public static boolean isFsrEnabled() { try { return FSR_ENABLED.get(); } catch (IllegalStateException e) { return false; } }
     public static double getFsrRenderScale() { try { return FSR_RENDER_SCALE.get(); } catch (IllegalStateException e) { return 0.75; } }
     public static double getFsrSharpness() { try { return FSR_SHARPNESS.get(); } catch (IllegalStateException e) { return 0.2; } }
